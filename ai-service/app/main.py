@@ -11,24 +11,6 @@ import uvicorn
 load_dotenv()
 app = FastAPI()
 
-def run_conversation(query: str,collection_name:str, user_id: str):
-    config = {"configurable": {"thread_id": user_id}}
-    initial_state = {
-        "messages": [HumanMessage(content=query)],
-        "collection_name": collection_name,
-        "user_id":user_id
-    }
-    for event in graph.stream(state, config):
-        for value in event.values():
-            if value.get("messages"):
-                print("Customer Support:", value["messages"][-1].content)
-                last_message = event["messages"][-1]
-                await websocket.send_json({
-                    "type": "chunk",
-                    "content": last_message.content
-                })
-
-
 @app.get("/")
 async def root():
     return {"status": "ok"}

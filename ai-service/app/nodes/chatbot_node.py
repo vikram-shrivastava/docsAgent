@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage
 from utils.llm import strong_llm
 from utils.state import State
 
-mem0 = MemoryClient()
+mem0 = MemoryClient(api_key="m0-Uw4gJV6DjVRWK2X9ht0BxIJijmDd5WenfY8I3M9l")
 
 def chatbot_node(state: State) -> dict:
     messages = state["messages"]

@@ -3,7 +3,7 @@ from nodes.optimize_query import optimize_query
 from nodes.multi_query import multi_query
 from nodes.retrieve_query import retrieve_query
 from nodes.selectdocs import selectdocs
-from nodes.chatbot import chatbot_node
+from nodes.chatbot_node import chatbot_node
 from utils.state import State
 
 def route_after_optimize(state: State):
