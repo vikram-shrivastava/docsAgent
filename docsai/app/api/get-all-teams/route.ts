@@ -9,7 +9,6 @@ export async function GET(request: Request) {
   await ConnectDB()
 
   try {
-    // 🔐 Auth
     const authHeader = request.headers.get("authorization")
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -36,7 +35,6 @@ export async function GET(request: Request) {
       )
     }
 
-    // 🔎 Get all teams where user involved
     const teams = await Team.find({
       $or: [
         { creator: userId },
@@ -47,7 +45,6 @@ export async function GET(request: Request) {
       .populate("members", "name email")
       .sort({ createdAt: -1 })
 
-    // 🧠 Split logic
     const createdTeams = []
     const memberTeams = []
 

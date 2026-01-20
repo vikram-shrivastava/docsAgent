@@ -9,19 +9,26 @@ def chatbot_node(state: State) -> dict:
     messages = state["messages"]
     user_id = state["user_id"]
 
-    # --------------------------------------------------
-    # 🔹 Fetch long-term memory
-    # --------------------------------------------------
-    memories = mem0.search(messages[-1].content, user_id=user_id)
+
+    filters={
+        "OR":[
+            {
+                "user_id":user_id
+            },
+            {
+                "agent_id":"*"
+            }
+        ]
+    }
+
+    memories = mem0.search(messages[-1].content,filters=filters)
     memory_list = memories.get("results", [])
 
     memory_context = "Relevant information from previous conversations:\n"
     for memory in memory_list:
         memory_context += f"- {memory['memory']}\n"
 
-    # --------------------------------------------------
-    # 🔹 Convert retrieved documents into text context
-    # --------------------------------------------------
+
     doc_context = "\n\n".join(
         f"""
 Source: {doc.metadata.get('source', 'N/A')}
@@ -32,9 +39,7 @@ Content:
         for doc in state["common_results"]
     )
 
-    # --------------------------------------------------
-    # 🔹 System prompt
-    # --------------------------------------------------
+
     system_prompt = SystemMessage(content=f"""
 You are a helpful AI assistant.
 
@@ -56,9 +61,6 @@ Conversation Memory:
 
     response = strong_llm.invoke(full_messages)
 
-    # --------------------------------------------------
-    # 🔹 Save memory
-    # --------------------------------------------------
     try:
         interaction = [
             {"role": "user", "content": messages[-1].content},

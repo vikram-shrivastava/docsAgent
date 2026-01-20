@@ -39,7 +39,6 @@ export async function GET(
       return NextResponse.json({ message: "Invalid team ID" }, { status: 400 })
     }
 
-    // 5️⃣ Fetch team
     const team = await Team.findById(teamId)
       .populate("creator", "name email")
       .populate("members", "name email")
