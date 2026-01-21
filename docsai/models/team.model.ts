@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema,Types  } from "mongoose"
+import mongoose, { Document, Model, models, Schema,Types  } from "mongoose"
 
 export interface ITeam extends Document {
   teamName: string
@@ -31,5 +31,5 @@ const TeamSchema=new Schema<ITeam>({
         default:[]
     }
 });
-const Team: Model<ITeam> = mongoose.model("Team", TeamSchema);
+const Team: Model<ITeam> = models.Team || mongoose.model<ITeam>("Team", TeamSchema);
 export default Team;

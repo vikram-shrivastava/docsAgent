@@ -1,5 +1,6 @@
 import ConnectDB from "@/lib/dbConnect";
 import Doc from "@/models/docs.model";
+import Chat from "@/models/chat.model";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
@@ -36,9 +37,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const userId = decoded._id; 
+    const userId = decoded._id;
 
-    const { query, docId } = await request.json();
+    const { query, docId, chatId } = await request.json();
 
     if (!query || !docId) {
       return NextResponse.json(
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
       );
     }
 
-
+    // 1️⃣ Call Python AI server (UNCHANGED)
     const pythonResponse = await fetch("http://localhost:8000/chat", {
       method: "POST",
       headers: {
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         query: query,
         collection_name: doc._id.toString(),
-        user_id: userId,                     
+        user_id: userId,
       }),
     });
 
@@ -78,11 +79,58 @@ export async function POST(request: Request) {
 
     const pythonData = await pythonResponse.json();
 
+    const assistantAnswer = pythonData.answer;
+
+    // 2️⃣ Create new chat OR update existing one (Node-side only)
+    let chat;
+
+    if (chatId) {
+      chat = await Chat.findOneAndUpdate(
+        { _id: chatId, user: userId },
+        {
+          $push: {
+            messages: {
+              $each: [
+                { role: "user", content: query },
+                { role: "assistant", content: assistantAnswer },
+              ],
+            },
+          },
+        },
+        { new: true }
+      );
+
+      if (!chat) {
+        return NextResponse.json(
+          { message: "Chat not found" },
+          { status: 404 }
+        );
+      }
+    } else {
+      const teamId=doc.teamId;
+      if(!teamId){
+        return NextResponse.json(
+          { message: "Document is not associated with any team" },
+          { status: 400 }
+        );
+      }
+
+      chat = await Chat.create({
+        user: userId,
+        team: teamId,
+        title: query.slice(0, 50),
+        messages: [
+          { role: "user", content: query },
+          { role: "assistant", content: assistantAnswer },
+        ],
+      });
+    }
+
     return NextResponse.json(
       {
         success: true,
-        answer: pythonData.answer,
-        thread_id: pythonData.thread_id,
+        answer: assistantAnswer,
+        chatId: chat._id,
       },
       { status: 200 }
     );
