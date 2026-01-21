@@ -39,16 +39,15 @@ export async function POST(request: Request) {
         
             const userId = decoded._id; 
 
-            const {teamId, teamPassword} = await request.json();
+            const {teamName, teamPassword} = await request.json();
 
-            if(!teamId || !teamPassword) {
+            if(!teamName || !teamPassword) {
                 return NextResponse.json(
-                    { message: "teamId and teamPassword are required" },
+                    { message: "teamName and teamPassword are required" },
                     { status: 400 }
                   );
             }
-            const team = await Team.findById(teamId);
-
+            const team = await Team.findOne({ teamName: teamName });
             if(!team) {
                 return NextResponse.json(
                     { message: "Team not found" },
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
                     { status: 400 }
                     );
             }
-            const members=await Team.findOne({_id:teamId,members:userId});
+            const members=await Team.findOne({_id:team._id,members:userId});
             if(members){
                 return NextResponse.json(
                     { message: "User is already a member of the team" },

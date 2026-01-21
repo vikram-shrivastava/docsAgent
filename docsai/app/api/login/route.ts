@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       {
         message: "Login successful",
         accessToken,
+        user: { id: user._id, name: user.name, email: user.email },
       },
       { status: 200 }
     )
