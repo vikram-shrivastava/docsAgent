@@ -9,6 +9,7 @@ export interface IMessage {
 export interface IChat {
   user: mongoose.Types.ObjectId;
   team?: mongoose.Types.ObjectId;
+  docId: mongoose.Types.ObjectId;
   messages: IMessage[];
   title?: string;
 }
@@ -26,6 +27,7 @@ const ChatSchema = new Schema<IChat>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     team: { type: Schema.Types.ObjectId, ref: "Team" },
+    docId: { type: Schema.Types.ObjectId, ref: "Doc", required: true },
     messages: [MessageSchema],
     title: String,
   },
