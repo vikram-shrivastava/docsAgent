@@ -10,7 +10,7 @@ export async function GET(
   await ConnectDB();
 
   try {
-    const params = await props.params; // Await params
+    const params = await props.params;
     const authHeader = request.headers.get("authorization");
     if (!authHeader) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     const token = authHeader.split(" ")[1];

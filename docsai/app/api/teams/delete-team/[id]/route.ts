@@ -10,8 +10,8 @@ interface Params {
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: Params }
+ request: Request,
+  props: { params: Promise<{ id: string }> }
 ) {
   await ConnectDB()
 
@@ -32,7 +32,7 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 })
     }
-
+    const params = await props.params;
     const teamId = params.id
     if (!mongoose.Types.ObjectId.isValid(teamId)) {
       return NextResponse.json({ message: "Invalid team ID" }, { status: 400 })
