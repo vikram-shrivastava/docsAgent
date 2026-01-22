@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     if (!doc) return NextResponse.json({ message: "Doc not found" }, { status: 404 });
 
     /* --- PYTHON AI CALL --- */
-    const pythonResponse = await fetch("http://localhost:8000/chat", {
+    const pythonResponse = await fetch(`${process.env.AI_SERVICE_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
