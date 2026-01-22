@@ -47,7 +47,7 @@ export default function Dashboard() {
       // Logic per your request: Join returns teamId and docs
       const res = await api.post("/teams/join", formData);
       // Redirect to team page immediately
-      router.push(`/team/${res.data.teamId}`);
+      router.push(`/teams/${res.data.teamId}`);
     } catch (err) {
       alert("Invalid Name or Password");
     }
