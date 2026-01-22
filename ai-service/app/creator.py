@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
+url=os.getenv("VECTOR_DB_URL")
+api_key=os.getenv("VECTOR_DB_API_KEY")
 def create_store(collection_name: str, file_url: str):
     loader = PyPDFLoader(file_path=file_url)
     docs = loader.load()
@@ -25,8 +26,8 @@ def create_store(collection_name: str, file_url: str):
 
     QdrantVectorStore.from_documents(
         documents=docs,
-        url="https://3731237b-00b6-475f-be6b-07f80f7671f7.europe-west3-0.gcp.cloud.qdrant.io",
-        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.6y_Qmy_JHhPubeO1lJc-4MdbkQ_ZQt1mBw-id5oGFpY",
+        url=url,
+        api_key=api_key,
         collection_name=collection_name,
         embedding=embeddings,
     )
